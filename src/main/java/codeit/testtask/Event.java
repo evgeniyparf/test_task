@@ -7,7 +7,7 @@ public class Event implements Runnable {
 
     public Event(String eventName, String stringTime) {
         this.eventName = eventName;
-        this.time = convertDateToTimestamp(stringTime);
+        this.time = convertToMilliseconds(stringTime);
     }
 
     @Override
@@ -15,7 +15,7 @@ public class Event implements Runnable {
         System.out.println(eventName + " { scheduled: " + time + ", executed: " + (System.currentTimeMillis() - Main.TIME_START) + " }");
     }
 
-    private static long convertDateToTimestamp(String stringTime) {
+    private static long convertToMilliseconds(String stringTime) {
         String[] time = stringTime.split(":");
         int mm = Integer.parseInt(time[0]);
         int ss = Integer.parseInt(time[1]);
@@ -40,6 +40,6 @@ public class Event implements Runnable {
     }
 
     public void setTime(String stringTime) {
-        this.time = convertDateToTimestamp(stringTime);
+        this.time = convertToMilliseconds(stringTime);
     }
 }

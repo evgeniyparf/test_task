@@ -15,7 +15,7 @@ public class Scheduler {
 
     private String filePath;
 
-    private PriorityQueue<Event> events = new PriorityQueue<>(Comparator.comparing(Event::getTime).reversed());
+    private PriorityQueue<Event> events = new PriorityQueue<>(Comparator.comparing(Event::getTime));
 
     public Scheduler(String filePath) {
         this.filePath = filePath;
@@ -24,10 +24,12 @@ public class Scheduler {
     public void scheduleTasks() {
         fillQueue();
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
         while(events.size() > 0) {
             Event event = events.poll();
             scheduler.schedule(event, event.getTime(), TimeUnit.MILLISECONDS);
         }
+
         scheduler.shutdown();
     }
 
@@ -40,8 +42,7 @@ public class Scheduler {
     }
 
     private List<Event> parseEventsFromJson() {
-        JsonDeserializer<Event> deserializer = new EventDeserializer();
-        Gson gson = new GsonBuilder().registerTypeAdapter(Event.class, deserializer).create();
+        Gson gson = new GsonBuilder().registerTypeAdapter(Event.class, new EventDeserializer()).create();
         try (Reader reader = new FileReader(filePath)) {
             JsonArray jsonElements = new JsonParser().parse(reader).getAsJsonArray();
             return gson.fromJson(jsonElements, new TypeToken<List<Event>>(){}.getType());
